@@ -1,0 +1,43 @@
+awq: false
+batch_size: 1
+block_name_to_quantize: model.layers
+block_size: 2048
+bnb: false
+dataset_path: /fast/atatjer/hf_fast/datasets/refinedweb/
+debug: false
+device: cuda
+do_fuse: false
+eval: true
+fuse_max_seq_len: 512
+gptq: true
+gptq_dataset: c4
+group_size: 128
+calibration_batch_size: 16
+gptq_model_seqlength: 512
+hf_hub_name: scalinglawsquantized
+model_file_patterns: '*.safetensors,*config.json'
+model_quantized_dir: /fast/atatjer/scalinglawsquantization/lawa/
+num_workers: 4
+push_to_hf_hub: false
+q_bits:
+- 4
+- 3
+quantize: True
+max_model_len: 4096
+
+repo_origin:
+- allenai/OLMo-2-0425-1B
+revision:
+- - stage2-ingredient3-step7000-tokens15B
+  - stage2-ingredient3-step19000-tokens40B
+  - stage2-ingredient3-step23852-tokens51B
+L :
+- 2
+- 3
+save_quantized_model: True
+tokenizer_name:
+- allenai/OLMo-2-0425-1B
+use_quant_cache: True
+wandb_dir: /fast/atatjer/wandb/scalinglawsquantization
+wandb_project: trainingdynamicsquantization
+wandb_run_name: 1B-LAWA-TIME

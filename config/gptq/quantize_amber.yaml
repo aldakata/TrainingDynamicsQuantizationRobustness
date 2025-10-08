@@ -1,0 +1,91 @@
+## CONFIG file
+debug: False
+
+# Cluster utils
+revision: 
+  [
+    'ckpt_000',
+    'ckpt_010',
+    'ckpt_020',
+    'ckpt_030',
+    'ckpt_040',
+    'ckpt_050',
+    'ckpt_060',
+    'ckpt_070',
+    'ckpt_080',
+    'ckpt_090',
+    'ckpt_100',
+    'ckpt_110',
+    'ckpt_120',
+    'ckpt_130',
+    'ckpt_140',
+    'ckpt_150',
+    'ckpt_160',
+    'ckpt_170',
+    'ckpt_180',
+    'ckpt_190',
+    'ckpt_200',
+    'ckpt_210',
+    'ckpt_220',
+    'ckpt_230',
+    'ckpt_240',
+    'ckpt_250',
+    'ckpt_260',
+    'ckpt_270',
+    'ckpt_280',
+    'ckpt_290',
+    'ckpt_300',
+    'ckpt_310',
+    'ckpt_320',
+    'ckpt_330',
+    'ckpt_340',
+    'ckpt_350',
+    'ckpt_355',
+    'main',
+  ]
+
+save_quantized_model: True
+
+# Eval
+eval: True
+quantize: True
+repo_origin:    LLM360/Amber
+tokenizer_name: LLM360/Amber
+block_size: 2048
+batch_size: 2
+num_workers: 8
+device: "cuda"
+
+dataset_path: "/fast/atatjer/hf_fast/datasets/refinedweb/" # 600k tkns
+model_quantized_dir: /fast/atatjer/scalinglawsquantization/modelsquantized
+model_file_patterns: "*.safetensors,*config.json"
+max_model_len: 2048
+# GPTQ
+gptq: True
+gptq_dataset: "c4"
+gptq_model_seqlength: 512
+group_size: 128
+calibration_batch_size: 16
+
+# AWQ
+awq: False
+do_fuse: False
+fuse_max_seq_len: 512
+
+bnb: False
+
+# Quantization
+q_bits:
+  - 4 
+  - 3
+block_name_to_quantize: model.layers
+use_quant_cache: True
+
+# HF
+push_to_hf_hub: False
+hf_hub_name: "scalinglawsquantized"
+
+# WANDB
+wandb_project: trainingdynamicsquantization
+wandb_run_name: amber-7B
+wandb_dir: /fast/atatjer/wandb/scalinglawsquantization

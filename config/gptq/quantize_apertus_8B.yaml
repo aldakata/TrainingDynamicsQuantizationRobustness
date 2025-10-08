@@ -1,0 +1,84 @@
+## CONFIG file
+debug: False
+
+# Cluster utils
+revision:
+  [
+    'step50000-tokens210B',
+    'step150000-tokens630B',
+    'step250000-tokens1050B',
+    'step350000-tokens1470B',
+    'step450000-tokens1890B',
+    'step550000-tokens2310B',
+    'step650000-tokens2730B',
+    'step750000-tokens3150B',
+    'step850000-tokens3570B',
+    'step950000-tokens3990B',
+    'step1000000-tokens4200B',
+    'step1194000-tokens5014B',
+    'step1432000-tokens6014B',
+    'step1670000-tokens7014B',
+    'step1700000-tokens7232B',
+    'step1800000-tokens8072B',
+    'step1900000-tokens8912B',
+    'step2000000-tokens9752B',
+    'step2100000-tokens10592B',
+    'step2200000-tokens11432B',
+    'step2250000-tokens11852B',
+    'step2300000-tokens12272B',
+    'step2400000-tokens13112B',
+    'step2500000-tokens13952B',
+    'step2550000-tokens14372B',
+    'step2600000-tokens14792B',
+    'step2627139-tokens15T',
+  ]
+
+save_quantized_model: True
+
+# Eval
+eval: True
+quantize: True
+repo_origin: swiss-ai/Apertus-8B-2509
+tokenizer_name: swiss-ai/Apertus-8B-2509
+block_size: 2048
+batch_size: 2
+num_workers: 8
+device: "cuda"
+
+dataset_path: "/fast/atatjer/hf_fast/datasets/refinedweb/" # 600k tkns
+model_quantized_dir: /fast/atatjer/scalinglawsquantization/modelsquantized
+model_file_patterns: "*.safetensors,*config.json"
+
+
+max_model_len: 4096
+
+
+# GPTQ
+gptq: True
+gptq_dataset: "c4"
+gptq_model_seqlength: 512
+group_size: 128
+calibration_batch_size: 16
+
+# AWQ
+awq: False
+do_fuse: False
+fuse_max_seq_len: 512
+
+bnb: False
+
+# Quantization
+q_bits:
+  - 4 
+  - 3
+block_name_to_quantize: model.layers
+use_quant_cache: True
+
+# HF
+push_to_hf_hub: False
+hf_hub_name: "scalinglawsquantized"
+
+# WANDB
+wandb_project: trainingdynamicsquantization
+wandb_run_name: Apertus-8B
+wandb_dir: /fast/atatjer/wandb/scalinglawsquantization

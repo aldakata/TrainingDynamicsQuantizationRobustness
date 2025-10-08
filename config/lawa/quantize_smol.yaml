@@ -1,0 +1,65 @@
+## CONFIG file
+# debug: True
+debug: False
+
+# Cluster utils
+revision:
+- -  stage3-step-4360000
+  -  stage3-step-4440000
+  -  stage3-step-4480000
+  -  stage3-step-4520000
+  -  stage3-step-4560000
+  -  stage3-step-4640000
+  -  stage3-step-4680000
+
+L:
+-  2
+-  4
+-  7
+
+save_quantized_model: True
+max_model_len: 4096
+# Eval
+eval: True
+quantize: True
+repo_origin: "HuggingFaceTB/SmolLM3-3B-checkpoints"
+tokenizer_name: HuggingFaceTB/SmolLM3-3B
+block_size: 2048
+batch_size: 1
+num_workers: 4
+device: "cuda"
+
+dataset_path: "/fast/atatjer/hf_fast/datasets/refinedweb/" # 600k tkns
+model_quantized_dir: /fast/atatjer/scalinglawsquantization/lawa
+model_file_patterns: ""
+
+# GPTQ
+gptq: True
+gptq_dataset: "c4"
+group_size: 128
+calibration_batch_size: 32
+
+# AWQ
+awq: False
+do_fuse: False
+fuse_max_seq_len: 512
+
+bnb: False
+
+# Quantization
+gptq_model_seqlength: 512
+q_bits:
+  - 3
+  - 4
+block_name_to_quantize: model.layers
+use_quant_cache: True
+
+# HF
+push_to_hf_hub: False
+hf_hub_name: "scalinglawsquantized"
+
+# WANDB
+log_wandb: True
+wandb_project: trainingdynamicsquantization
+wandb_run_name: smol-LAWA
+wandb_dir: /fast/atatjer/wandb/scalinglawsquantization

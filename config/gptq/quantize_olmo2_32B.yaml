@@ -1,0 +1,97 @@
+## CONFIG file
+debug: False
+
+# Cluster utils
+revision: [
+    'stage1-step17000-tokens143B',
+    'stage1-step54000-tokens453B',
+    'stage1-step90000-tokens755B',
+    'stage1-step114000-tokens957B',
+    'stage1-step136000-tokens1141B',
+    'stage1-step177000-tokens1485B',
+    'stage1-step217000-tokens1821B',
+    'stage1-step255000-tokens2140B',
+    'stage1-step305000-tokens2559B',
+    'stage1-step347000-tokens2911B',
+    'stage1-step376000-tokens3155B',
+    'stage1-step401000-tokens3364B',
+    'stage1-step442000-tokens3708B',
+    'stage1-step466000-tokens3910B',
+    'stage1-step506000-tokens4245B',
+    'stage1-step533000-tokens4472B',
+    'stage1-step556000-tokens4665B',
+    'stage1-step576000-tokens4832B',
+    'stage1-step596000-tokens5000B',
+    'stage1-step616000-tokens5168B',
+    'stage1-step635000-tokens5327B',
+    'stage1-step658000-tokens5520B',
+    'stage1-step695000-tokens5831B',
+    'stage1-step711000-tokens5965B',
+    'stage1-step718000-tokens6024B',
+    'stage1-step720000-tokens6040B',
+    'stage1-step721901-tokens6056B',
+    'stage2-ingredient1-step1000-tokens9B',
+    'stage2-ingredient1-step4000-tokens34B',
+    'stage2-ingredient1-step9000-tokens76B',
+    'stage2-ingredient1-step11921-tokens101B',
+    'stage2-ingredient3-step1000-tokens9B',
+    'stage2-ingredient3-step10000-tokens84B',
+    'stage2-ingredient3-step17000-tokens143B',
+    'stage2-ingredient3-step24000-tokens202B',
+    'stage2-ingredient3-step31000-tokens261B',
+    'stage2-ingredient3-step35500-tokens298B',
+    'stage2-ingredient3-step35763-tokens301B',
+    'stage2-ingredient4-step11921-tokens101B',
+    'main',
+]
+save_quantized_model: True
+
+# Eval
+eval: True
+quantize: True
+repo_origin: [allenai/OLMo-2-0325-32B]
+tokenizer_name: [allenai/OLMo-2-0325-32B]
+block_size: 2048
+batch_size: 1
+batch_sizeQ: 8
+num_workers: 8
+device: "cuda"
+max_model_len: 4096
+
+# dataset_path: 'Salesforce/wikitext' # 250k tkns
+# dataset_name: 'wikitext-2-raw-v1'
+
+dataset_path: "/fast/atatjer/hf_fast/datasets/refinedweb/" # 600k tkns
+model_quantized_dir: /fast/atatjer/scalinglawsquantization/modelsquantized
+model_file_patterns: "*.safetensors,*config.json,*.txt" # Has to be a string to not mess up the job queueing
+
+# GPTQ
+gptq: True
+gptq_dataset: "c4"
+gptq_model_seqlength: 512
+group_size: 128
+calibration_batch_size: 16
+
+
+# AWQ
+awq: False
+do_fuse: False
+fuse_max_seq_len: 512
+
+bnb: False
+# Quantization
+q_bits:
+- 3
+- 4
+block_name_to_quantize: model.layers
+
+# HF
+push_to_hf_hub: False
+hf_hub_name: "scalinglawsquantized"
+
+use_quant_cache: True
+
+# WANDB
+wandb_project: trainingdynamicsquantization
+wandb_run_name: allenai/OLMo-2-0325-32B
+wandb_dir: /fast/atatjer/wandb/scalinglawsquantization

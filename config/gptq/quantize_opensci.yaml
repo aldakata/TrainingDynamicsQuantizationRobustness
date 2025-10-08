@@ -1,0 +1,85 @@
+## CONFIG file
+debug: False
+
+# Cluster utils
+revision:
+  [
+    'iter_0058000',
+    'iter_0064000',
+    'iter_0068000',
+    'iter_0072000',
+    'iter_0076000',
+    'iter_0082000',
+    'iter_0090000',
+    'iter_0094000',
+    'iter_0098000',
+    'iter_0106000',
+    'iter_0110000',
+    'iter_0124000',
+    'iter_0130000',
+    'iter_0134000',
+    'iter_0138000',
+    'iter_0146000',
+    'iter_0160000',
+    'iter_0164000',
+    'iter_0174000',
+    'iter_0180000',
+    'iter_0186000',
+    'iter_0194000',
+    'iter_0200000',
+    'iter_0204000',
+    'iter_0208000',
+    'iter_0212000',
+    'iter_0216000',
+    'iter_0224000',
+    'iter_0230000',
+    'iter_0236000',
+    'iter_0242000',
+  ]
+max_model_len: 2048
+
+save_quantized_model: True
+
+# Eval
+eval: True
+quantize: True
+repo_origin: open-sci/open-sci-ref-v0.01-1.7b-nemotron-hq-1T-4096
+tokenizer_name: open-sci/open-sci-ref-v0.01-1.7b-nemotron-hq-1T-4096
+block_size: 2048
+batch_size: 2
+num_workers: 4
+device: "cuda"
+
+dataset_path: "/fast/atatjer/hf_fast/datasets/refinedweb/" # 600k tkns
+model_quantized_dir: /fast/atatjer/scalinglawsquantization/modelsquantized
+model_file_patterns: "*.safetensors,*config.json"
+
+# GPTQ
+gptq: True
+gptq_dataset: "c4"
+gptq_model_seqlength: 512
+group_size: 128
+calibration_batch_size: 4
+
+# AWQ
+awq: False
+do_fuse: False
+fuse_max_seq_len: 512
+
+bnb: False
+
+# Quantization
+q_bits:
+- 4
+- 3
+block_name_to_quantize: model.layers
+use_quant_cache: True
+
+# HF
+push_to_hf_hub: False
+hf_hub_name: "scalinglawsquantized"
+
+# WANDB
+wandb_project: trainingdynamicsquantization
+wandb_run_name: opensci
+wandb_dir: /fast/atatjer/wandb/scalinglawsquantization
