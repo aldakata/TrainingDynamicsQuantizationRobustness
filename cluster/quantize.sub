@@ -1,0 +1,24 @@
+# Define variables
+LOGS_DIR=/fast/atatjer/scalinglawsquantization/logs
+executable=/home/atatjer/src/TrainingDynamicsQuantizationRobustness/cluster/run.sh
+
+# Args
+arguments = $(config) $(n_jobs) $(Process)
+
+# Logs
+error = $(LOGS_DIR)/err/job.$(Cluster).$(Process).err
+output = $(LOGS_DIR)/out/job.$(Cluster).$(Process).out
+log = $(LOGS_DIR)/log/job.$(Cluster).$(Process).log
+
+# Specs
+request_memory = 300000
+request_cpus = 16
+request_gpus = 1
+# requirements = (TARGET.CUDADeviceName == "NVIDIA A100-SXM4-80GB")
+# requirements = (TARGET.CUDADeviceName == "NVIDIA A100-SXM4-80GB")
+environment = WANDB_API_KEY=21157b9718dc374a30d651deeed48fb810c74fee
+# requirements = (TARGET.CUDACapability == 9.0)
+# requirements =  (TARGET.CUDACapability >= 8.0)
+requirements =  (TARGET.CUDACapability >= 8.0) && (TARGET.CUDADeviceName != "NVIDIA A100-SXM4-40GB")
+
+getenv = True
