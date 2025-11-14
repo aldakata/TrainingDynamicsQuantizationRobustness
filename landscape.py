@@ -100,7 +100,7 @@ paths = [
 ]
 
 # Load and flatten to get the data matrix (N,P), where N is the number of samples and P is the dimention of each, in my case (15, 160M)
-if not f'{DST}/pca_top2.pt':
+if not f'{DST}/pca_topk.pt' or True:
     model_cfg = AutoConfig.from_pretrained(f"EleutherAI/pythia-160m")
     base_model =  AutoModelForCausalLM.from_config(model_cfg)
 
@@ -109,7 +109,7 @@ if not f'{DST}/pca_top2.pt':
         model = deepcopy(base_model)
         state_dict = torch.load(path, map_location='cpu')
         tmp = model.load_state_dict(state_dict['state_dict'])
-        flat_params = torch.cat([p.detach().flatten() for p in model.parameters()])
+        flat_params = torch.cat([p.detach().flatten() for p in model.parameters()]) # Only if param regquires grad, otherwise it doesn't make sense to change it.
         vector_list.append(flat_params)
         del model
         del tmp
@@ -123,20 +123,23 @@ if not f'{DST}/pca_top2.pt':
     U, S, Vt = torch.linalg.svd(C) # (N,N), (N), (N,N)
     explained_variance = S**2 / (Xc.shape[0] - 1) # (N)
     explained_variance_ratio = explained_variance / explained_variance.sum() # (N)
-    print( sum(explained_variance_ratio[:2]), explained_variance, explained_variance_ratio)
-    eigvecs_top2 = U[:, :2] # (N, 2)
-    S_top2 = S[:2] # (2)
-    V = (Xc.T @ eigvecs_top2) / torch.sqrt(S_top2) # (P,2) = (P,N)@(N,2)
-    projs = Xc @ V # (N,2) = (N,P)@(P,2)
+    print(sum(explained_variance_ratio[:2]), explained_variance, explained_variance_ratio)
+    del Vt, explained_variance
+    eigvecs_topk = U # (N, k)
+    S_topk = torch.sqrt(S) # (K)
+    V = (Xc.T @ eigvecs_topk) # (P,K) = (P,N)@(N,K)
+    V = V/ S_topk 
+    projs = Xc @ V # (N,K) = (N,P)@(P,K)
+    X_recon = projs @ V.T + mean  # (N, P)
     projs = projs.to('cpu')
     torch.save({
         'mean': mean.squeeze(0),  # (160M,)
-        'top2_param_space': V,           # (160M, 2)
+        'topk_param_space': V,           # (160M, K)
         'explained_variance_ratio': explained_variance_ratio,
         'projections': projs,
-    }, f'{DST}/pca_top2.pt')
+    }, f'{DST}/pca_topk.pt')
 else:
-    state_dict = torch.load(f'{DST}/pca_top2.pt')
+    state_dict = torch.load(f'{DST}/pca_topk.pt')
     projs = state_dict['projections']
 plotting_meta = [
     ([36, 0, 1, 2, 3, 4, 5],                                                                                    'coral', 'Decay 0'),
@@ -165,7 +168,7 @@ plt.savefig(f"{DST}/landscape.png")
 
 # Sample from the Top2 PCA grid.
 # Sampling strategy is gaussian around the weights, and then Latin Hypercube Sampling on the rest of the cube.
-# Goal is to gather ~200 samples now, and up to 2K in the future if this looks interesting.
+# Sampling from the projection space
 def gaussian_sample_neighbourhood(X, sigma, n_samples):
     rows,cols = X.shape
     samples = np.zeros((rows*n_samples, cols))
@@ -224,19 +227,6 @@ print(f"Total samples {total_samples.shape}")
 torch.save({
     'total_samples': total_samples,
 }, f'{DST}/pca_top2_samples.pt')
-# # Now compute loss statistics in a top2 neighbourhood of each of the point.
-# # Model has to be reconstructed from the each of the top2 directions, to apply the modifications in a grid around these two.
-# def reconstruct_model(base_model, flat_params):
-#     model = deepcopy(base_model)
-#     offset = 0
-
-#     with torch.no_grad():
-#         for p in model.parameters():
-#             numel = p.numel()                   # number of elements
-#             shaped = flat_params[offset:offset+numel].view_as(p)
-#             p.copy_(shaped)                    # write back into model
-#             offset += numel
-#     return model
 
 # # Requires many loss evaluations. Current val_set is  ~600kTKs, let's get an estimate for this, otherwise, it is not that terrible to have a run time of 2 minutes per each
 # # considering that this can be parallelized for each of the models easily leading to less than 2k evaluations total, which is doable in the cluster.
